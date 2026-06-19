@@ -9,12 +9,22 @@ import java.util.Collections;
 @Service
 public class CustomUserService implements UserDetailsService {
 
+    private final String expectedUsername = "admin";
+    private final String hashedPassword;
+
+    public CustomUserService() {
+        this.hashedPassword = new BCryptPasswordEncoder().encode("password");
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) {
 
-        // Hardcoded user for simplicity
-        return new User("admin",
-                new BCryptPasswordEncoder().encode("password"),
+        if (!expectedUsername.equals(username)) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+
+        return new User(expectedUsername,
+                hashedPassword,
                 Collections.emptyList());
     }
 }
